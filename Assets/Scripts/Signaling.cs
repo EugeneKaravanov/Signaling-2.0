@@ -3,31 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
-[RequireComponent (typeof(ThiefInHouse))]
 
 public class Signaling : MonoBehaviour
 {
     private AudioSource _audioSource;
-    private ThiefInHouse _thiefEnter;
     private float _volumeChange = 0.1f;
     private float _maxVolume = 1;
     private float _minVolume = 0;
+    private Coroutine _currenCoroutine;
+
+    public void ActivateVolumeChanging(bool isThiefInHouse)
+    {
+        if (_currenCoroutine != null)
+        {
+            StopCoroutine(_currenCoroutine);
+        }
+
+        if (_audioSource.volume < _maxVolume && isThiefInHouse)
+        {
+            _currenCoroutine = StartCoroutine(ChangeVolume(_maxVolume));
+        }
+        else if (_audioSource.volume > _minVolume)
+        {
+            _currenCoroutine = StartCoroutine(ChangeVolume(_minVolume));
+        }
+    }
 
     private void Start()
     {
         _audioSource = GetComponent<AudioSource>();
-        _thiefEnter = GetComponent<ThiefInHouse>();
     }
 
-    private void Update()
+    private IEnumerator ChangeVolume(float volumeTargetValue)
     {
-        if(_audioSource.volume < _maxVolume && _thiefEnter.TellThiefInHouse())
+        while (_audioSource.volume != volumeTargetValue)
         {
-            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, _maxVolume, _volumeChange * Time.deltaTime);
-        }
-        else
-        {
-            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, _minVolume, _volumeChange * Time.deltaTime);
+            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, volumeTargetValue, _volumeChange * Time.deltaTime);
+            yield return null;
         }
     }
 }
