@@ -10,28 +10,28 @@ public class Signaling : MonoBehaviour
     private float _volumeChange = 0.1f;
     private float _maxVolume = 1;
     private float _minVolume = 0;
-    private Coroutine _currenCoroutine;
-
-    public void ActivateVolumeChanging(bool isThiefInHouse)
-    {
-        if (_currenCoroutine != null)
-        {
-            StopCoroutine(_currenCoroutine);
-        }
-
-        if (_audioSource.volume < _maxVolume && isThiefInHouse)
-        {
-            _currenCoroutine = StartCoroutine(ChangeVolume(_maxVolume));
-        }
-        else if (_audioSource.volume > _minVolume)
-        {
-            _currenCoroutine = StartCoroutine(ChangeVolume(_minVolume));
-        }
-    }
+    private Coroutine _currentCoroutine;
 
     private void Start()
     {
         _audioSource = GetComponent<AudioSource>();
+    }
+
+    public void ActivateVolumeChanging(bool isThiefInHouse)
+    {
+        if (_currentCoroutine != null)
+        {
+            StopCoroutine(_currentCoroutine);
+        }
+
+        if (_audioSource.volume < _maxVolume && isThiefInHouse)
+        {
+            _currentCoroutine = StartCoroutine(ChangeVolume(_maxVolume));
+        }
+        else if (_audioSource.volume > _minVolume)
+        {
+            _currentCoroutine = StartCoroutine(ChangeVolume(_minVolume));
+        }
     }
 
     private IEnumerator ChangeVolume(float volumeTargetValue)
